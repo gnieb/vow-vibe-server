@@ -3,7 +3,8 @@
 
 MODELS:
 
-USER
+USER ---- WEDDING  -------< EVENTS >-------TO DOS
+                 
 To do's 
 
 

@@ -1,8 +1,9 @@
 from config import db
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import bcrypt
+from sqlalchemy_serializer import SerializerMixin
 
-class User(db.Resource):
+class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +11,7 @@ class User(db.Resource):
     _password_hash = db.Column(db.String)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
+    wedding_id = db.relationship('Wedding', backref='user')
 
     @hybrid_property
     def password_hash(self):
@@ -26,3 +28,10 @@ class User(db.Resource):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8')
         )
+    
+class Wedding(db.Model, SerializerMixin):
+    __tablename__ = 'weddings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

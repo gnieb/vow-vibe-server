@@ -1,6 +1,7 @@
 from config import app, api;
 from flask_restful import Resource
 from flask import make_response
+from models import Wedding, User
 
 
 class Home(Resource):
