@@ -1,13 +1,15 @@
 from config import db
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
 from flask_bcrypt import bcrypt
 from sqlalchemy_serializer import SerializerMixin
+import re
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
     _password_hash = db.Column(db.String)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -28,6 +30,14 @@ class User(db.Model, SerializerMixin):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8')
         )
+    
+    @validates('email')
+    def validate_email(self, key, address):
+        regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+');
+        if re.fullmatch(regex, address):
+            return address
+        raise ValueError("Not a valid email address")
+
     
 class Wedding(db.Model, SerializerMixin):
     __tablename__ = 'weddings'
