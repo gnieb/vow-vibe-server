@@ -45,3 +45,12 @@ class Wedding(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    guests = db.relationship('Guest', backref="wedding")
+
+class Guest(db.Model, SerializerMixin):
+    __tablename__ = "guests"
+
+    id = db.Column(db.Integer, primary_key = True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
