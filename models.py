@@ -53,13 +53,6 @@ class Wedding(db.Model, SerializerMixin):
     guests = db.relationship('Guest', backref="wedding")
 
 
-# class UserWeddingInstance(db.Model, SerializerMixin):
-#     __tablename__= "userweddinginstances"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-#     wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
-
 class Guest(db.Model, SerializerMixin):
     __tablename__ = "guests"
 
