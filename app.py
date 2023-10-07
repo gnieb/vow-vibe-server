@@ -27,7 +27,7 @@ class UserById(Resource):
 
         if not user:
             return make_response({"error":"no user found"}, 404)
-        return make_response(user.to_dict(rules=('weddings',)), 200)
+        return make_response(user.to_dict(rules=('weddings','todos')), 200)
 
 
 ####### SignIn########

@@ -8,7 +8,7 @@ import re
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
-    serialize_rules = ('-weddings',)
+    serialize_rules = ('-weddings','-todos')
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, nullable=False)
@@ -17,6 +17,7 @@ class User(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
     # wedding_id = db.relationship('Wedding', backref='user')
     weddings = db.relationship('Wedding', backref='user' )
+    todos = db.relationship('ToDo', backref='user' )
 
     @hybrid_property
     def password_hash(self):
@@ -60,3 +61,14 @@ class Guest(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
+
+class ToDo(db.Model, SerializerMixin):
+    __tablename__= 'todos'
+
+    id  = db.Column(db.Integer, primary_key=True)
+    todo = db.Column(db.String, nullable=False)
+    isDone = db.Column(db.Boolean)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+
