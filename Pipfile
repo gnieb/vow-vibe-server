@@ -14,6 +14,7 @@ sqlalchemy-serializer = "*"
 requests = "*"
 flask-bcrypt = "*"
 psycopg2-binary = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

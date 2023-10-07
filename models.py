@@ -42,10 +42,20 @@ class User(db.Model, SerializerMixin):
 class Wedding(db.Model, SerializerMixin):
     __tablename__ = 'weddings'
 
+    serialize_rules = ('-guests','-user.weddings',)
+
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.String, )
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     guests = db.relationship('Guest', backref="wedding")
+
+
+# class UserWeddingInstance(db.Model, SerializerMixin):
+#     __tablename__= "userweddinginstances"
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
 
 class Guest(db.Model, SerializerMixin):
     __tablename__ = "guests"
