@@ -61,6 +61,7 @@ class Guest(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
+    isAttending = db.Column(db.Boolean )
 
 class ToDo(db.Model, SerializerMixin):
     __tablename__= 'todos'
