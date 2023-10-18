@@ -2,6 +2,8 @@ from config import app, api;
 from flask_restful import Resource
 from flask import make_response, request
 from models import Wedding, User, Guest
+import jwt
+
 
 
 
@@ -12,14 +14,22 @@ class Home(Resource):
 
 class Users(Resource):
 #    ###### SIGN UP #########
-#     def post(self):
-#         useremail = request.get_json(['email'])
-#         checkuser = User.query.find_by(email=useremail).first()
-#         if checkuser:
-#             return make_response({"error":"This email is already associated mwith an account"}, 400)
+    def post(self):
+        data = request.get_json()
+        useremail = request.get_json(['email'])
+        checkuser = User.query.find_by(email=useremail).first()
+        if checkuser:
+            return make_response({"error":"This email is already associated mwith an account"}, 400)
         
-#         # otherwise, create new user.
-    pass
+        # otherwise, create new user.
+        if checkuser == None:
+            # create new user
+            try:
+                tryuser = User()
+            except:
+                return make_response({"error":"problem creating this user"}, 404)
+
+    
 
 class UserById(Resource):
     def get(self, id):
