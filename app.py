@@ -1,8 +1,10 @@
-from config import app, api;
+from config import app, api, db
 from flask_restful import Resource
 from flask import make_response, request
 from models import Wedding, User, Guest
 import jwt
+from datetime import datetime, timedelta
+import os
 
 
 
@@ -25,9 +27,23 @@ class Users(Resource):
         if checkuser == None:
             # create new user
             try:
-                tryuser = User()
+                tryuser = User(email=useremail, first_name=data['first_name'], last_name=data['last_name'])
+                password = data['password']
+                tryuser.password_hash = password
+
             except:
-                return make_response({"error":"problem creating this user"}, 404)
+                return make_response({"error":"Validation error: unable to complete request"}, 400)
+
+            try:
+                db.session.add(tryuser)
+                db.session.commit()
+                # JWT TOKEN SITUATION:
+
+                token = jwt.encode({'id': tryuser.id, 'expire': datetime.utcnow() + timedelta(minutes = 60)}, os.environ['SECRET_KEY'])
+                return make_response({'token': token.decode('UTF-8'), 'newuser': tryuser.to_dict()}, 201)
+            
+            except:
+                return make_response({"error":"Validation error: unable to complete request"}, 400)
 
     
 
