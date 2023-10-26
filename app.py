@@ -40,7 +40,7 @@ class Users(Resource):
                 # JWT TOKEN SITUATION:
 
                 token = jwt.encode({'id': tryuser.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
-                return make_response({'my-jwt': token.decode('UTF-8'), 'user': tryuser.to_dict()}, 201)
+                return make_response({'token': token.decode('UTF-8'), 'user': tryuser.to_dict()}, 201)
             
             except:
                 return make_response({"error":"Validation error: unable to complete request"}, 400)
@@ -69,7 +69,7 @@ class Login(Resource):
         
         if user.authenticate(password):
             token = jwt.encode({'id': user.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
-            return make_response({'my-jwt': token.decode('UTF-8'), 'user':user.to_dict()}, 200)
+            return make_response({'token': token.decode('UTF-8'), 'user':user.to_dict()}, 200)
 
         return make_response({"error":"Authentication failed"}, 400)
     # expire this after 2 hours
