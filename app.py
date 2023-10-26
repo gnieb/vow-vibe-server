@@ -39,8 +39,8 @@ class Users(Resource):
                 db.session.commit()
                 # JWT TOKEN SITUATION:
 
-                token = jwt.encode({'id': tryuser.id, 'expire': datetime.utcnow() + timedelta(minutes = 60)}, os.environ['SECRET_KEY'])
-                return make_response({'token': token.decode('UTF-8'), 'newuser': tryuser.to_dict()}, 201)
+                token = jwt.encode({'id': tryuser.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
+                return make_response({'my-jwt': token.decode('UTF-8'), 'user': tryuser.to_dict()}, 201)
             
             except:
                 return make_response({"error":"Validation error: unable to complete request"}, 400)
@@ -57,15 +57,27 @@ class UserById(Resource):
 
 
 ####### SignIn########
-class SignIn(Resource):
+class Login(Resource):
     def post(self):
-        pass
+        useremail = request.get_json()['email']
+        password = request.get_json()['password']
+
+        user = User.query.filter_by(User.email == useremail).first()
+
+        if not user:
+            return make_response({"error":"No user found"}, 401)
+        
+        if user.authenticate(password):
+            token = jwt.encode({'id': user.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
+            return make_response({'my-jwt': token.decode('UTF-8'), 'user':user.to_dict()}, 200)
+
+        return make_response({"error":"Authentication failed"}, 400)
     # expire this after 2 hours
 
 class SignOut(Resource):
     def delete(self):
         pass
-
+# do we even need this? on the front end we can just delete the token and it'll kick the user right out. 
 class CheckSession(Resource):
     def get(self):
         pass
@@ -73,8 +85,8 @@ class CheckSession(Resource):
 
 
 api.add_resource(Home, '/')
-api.add_resource(SignIn, '/signin')
-api.add_resource(Users, '/signup')
+api.add_resource(Login, '/login')
+api.add_resource(Users, '/users')
 api.add_resource(SignOut, '/signout')
 api.add_resource(CheckSession, '/checksession')
 api.add_resource(UserById, '/users/<int:id>')
