@@ -4,6 +4,7 @@ from flask import make_response, request
 from models import Wedding, User, Guest
 import jwt
 from datetime import datetime, timedelta
+import json
 import os
 
 
@@ -18,10 +19,11 @@ class Users(Resource):
 #    ###### SIGN UP #########
     def post(self):
         data = request.get_json()
-        useremail = request.get_json(['email'])
-        checkuser = User.query.find_by(email=useremail).first()
+        useremail = request.get_json()['email']
+        checkuser = User.query.filter(User.email == useremail).first()
+        
         if checkuser:
-            return make_response({"error":"This email is already associated mwith an account"}, 400)
+            return make_response({"error":"This email is already associated with an account"}, 400)
         
         # otherwise, create new user.
         if checkuser == None:
@@ -39,7 +41,10 @@ class Users(Resource):
                 db.session.commit()
                 # JWT TOKEN SITUATION:
 
-                token = jwt.encode({'id': tryuser.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
+                token = jwt.encode({
+                    'id': tryuser.id, 
+                    # 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes = 30)
+                    }, os.getenv('SECRET_KEY'))
                 return make_response({'token': token.decode('UTF-8'), 'user': tryuser.to_dict()}, 201)
             
             except:
@@ -70,8 +75,8 @@ class Login(Resource):
             return make_response({"error":"No user found"}, 401)
         
         if user.authenticate(password):
-            token = jwt.encode({'id': user.id, 'expire': datetime.utcnow() + timedelta(minutes = 120)}, os.environ['SECRET_KEY'])
-            return make_response({'token': token.decode('UTF-8'), 'user':user.to_dict()}, 200)
+            token = jwt.encode({'id': user.id},  os.getenv('SECRET_KEY'))
+            return make_response({'token': token, 'user':user.to_dict()}, 200)
 
         return make_response({"error":"Authentication failed"}, 400)
     # expire this after 2 hours
