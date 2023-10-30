@@ -1,7 +1,7 @@
-from config import db
+from config import db, bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
-from flask_bcrypt import bcrypt
+
 from sqlalchemy_serializer import SerializerMixin
 import re
 
@@ -33,7 +33,8 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8')
-        )
+            )
+        
     
     @validates('email')
     def validate_email(self, key, address):

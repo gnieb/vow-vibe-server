@@ -45,7 +45,9 @@ class Users(Resource):
             except:
                 return make_response({"error":"Validation error: unable to complete request"}, 400)
 
-    
+    def get(self):
+        users = [user.to_dict() for user in User.query.all()]
+        return make_response(users, 200)
 
 class UserById(Resource):
     def get(self, id):
@@ -62,7 +64,7 @@ class Login(Resource):
         useremail = request.get_json()['email']
         password = request.get_json()['password']
 
-        user = User.query.filter_by(User.email == useremail).first()
+        user = User.query.filter(User.email == useremail).first()
 
         if not user:
             return make_response({"error":"No user found"}, 401)
