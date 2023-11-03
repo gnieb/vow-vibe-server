@@ -85,9 +85,33 @@ class SignOut(Resource):
     def delete(self):
         pass
 # do we even need this? on the front end we can just delete the token and it'll kick the user right out. 
-class CheckSession(Resource):
+
+
+class Weddings(Resource):
     def get(self):
         pass
+
+    def post(self):
+        data = request.get_json()
+
+        try:
+            wedding = Wedding(
+                wedding_date=data['wedding_date'],
+                # this might be able to come from somewhere else?
+                user_id=data['user_id']
+            )
+        except:
+            return make_response({"error":"Validation Error"}, 400)
+
+        try:
+            db.session.add(wedding)
+            db.session.commit()
+            return make_response(wedding.to_dict(), 200)
+        
+        except:
+            return make_response({"error":"Validation Error"}, 400)
+        
+        
 
 
 
@@ -95,7 +119,7 @@ api.add_resource(Home, '/')
 api.add_resource(Login, '/login')
 api.add_resource(Users, '/users')
 api.add_resource(SignOut, '/signout')
-api.add_resource(CheckSession, '/checksession')
+api.add_resource(Weddings, '/weddings')
 api.add_resource(UserById, '/users/<int:id>')
 
 
