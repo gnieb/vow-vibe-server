@@ -1,6 +1,8 @@
 from config import db, bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
+from datetime import datetime, timedelta
+from sqlalchemy.sql import func
 
 from sqlalchemy_serializer import SerializerMixin
 import re
@@ -50,7 +52,11 @@ class Wedding(db.Model, SerializerMixin):
     serialize_rules = ('-guests',)
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String, )
+    date = db.Column(db.DateTime(timezone=True),
+                           server_default=func.now())
+
+    # The time the wedding date was created at in the database. You use db.DateTime to define it as a Python datetime object. timezone=True enables timezone support. server_default sets the default value in the database when creating the table, so that default values are handled by the database rather than the model. You pass it the func.now() function which calls the SQL now() datetime function. In SQLite, it is rendered as CURRENT_TIMESTAMP when creating the wedding....
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     guests = db.relationship('Guest', backref="wedding")
 
