@@ -52,8 +52,9 @@ class Wedding(db.Model, SerializerMixin):
     serialize_rules = ('-guests',)
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime(timezone=True),
+    created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
+    wedding_date = db.Column(db.DateTime, default=datetime.now)
 
     # The time the wedding date was created at in the database. You use db.DateTime to define it as a Python datetime object. timezone=True enables timezone support. server_default sets the default value in the database when creating the table, so that default values are handled by the database rather than the model. You pass it the func.now() function which calls the SQL now() datetime function. In SQLite, it is rendered as CURRENT_TIMESTAMP when creating the wedding....
 
