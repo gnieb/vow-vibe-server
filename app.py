@@ -89,7 +89,12 @@ class SignOut(Resource):
 
 class Weddings(Resource):
     def get(self):
-        pass
+        weddings = [w.to_dict() for w in Wedding.query.find_all() ]
+
+        if len(weddings) == 0:
+            return make_response({"error":"No weddings found"}, 400)
+
+        return make_response(weddings, 200)
 
     def post(self):
         data = request.get_json()
@@ -112,9 +117,6 @@ class Weddings(Resource):
             return make_response({"error":"Validation Error"}, 400)
         
         
-
-
-
 api.add_resource(Home, '/')
 api.add_resource(Login, '/login')
 api.add_resource(Users, '/users')

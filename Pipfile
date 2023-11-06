@@ -17,6 +17,7 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 pyjwt = "*"
 pytest = "*"
+jwt = "*"
 
 [dev-packages]
 
