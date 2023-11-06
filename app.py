@@ -97,13 +97,25 @@ class Weddings(Resource):
         return make_response(weddings, 200)
 
     def post(self):
-        data = request.get_json()
+        user_id = request.get_json()['user_id']
+        wedding_date_str = request.get_json()['wedding_date']
+
+        # Convert wedding_date_str to a Python datetime object
+        wedding_date = datetime.strptime(wedding_date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        # This assumes that the incoming string will be this format string: 
+        # const addWedding = async () => {
+        # const weddingData = {
+        #     bride_name: 'Alice',
+        #     groom_name: 'Bob',
+        #     wedding_date: '2023-11-05T14:30:00.000Z',  // Adjust the date format as needed
+        # };
 
         try:
             wedding = Wedding(
-                wedding_date=data['wedding_date'],
+                wedding_date=wedding_date,
                 # this might be able to come from somewhere else?
-                user_id=data['user_id']
+                user_id=user_id
             )
         except:
             return make_response({"error":"Validation Error"}, 400)
