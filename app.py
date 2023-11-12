@@ -76,7 +76,7 @@ class Login(Resource):
         
         if user.authenticate(password):
             token = jwt.encode({'id': user.id},  os.getenv('SECRET_KEY'))
-            return make_response({'token': token, 'user':user.to_dict()}, 200)
+            return make_response({'token': token.decode('UTF-8'), 'user':user.to_dict()}, 200)
 
         return make_response({"error":"Authentication failed"}, 400)
     # expire this after 2 hours

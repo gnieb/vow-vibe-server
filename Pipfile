@@ -17,6 +17,7 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 pytest = "*"
 pyjwt = "==1.7.1"
+importlib-resources = "*"
 
 [dev-packages]
 
