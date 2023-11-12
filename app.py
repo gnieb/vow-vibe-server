@@ -2,11 +2,10 @@ from config import app, api, db
 from flask_restful import Resource
 from flask import make_response, request
 from models import Wedding, User, Guest
-import jwt
 from datetime import datetime, timedelta
 import json
 import os
-
+import jwt
 
 
 
@@ -72,6 +71,7 @@ class Login(Resource):
         user = User.query.filter(User.email == useremail).first()
 
         if not user:
+            print("no user found")
             return make_response({"error":"No user found"}, 401)
         
         if user.authenticate(password):

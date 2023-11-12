@@ -15,9 +15,8 @@ requests = "*"
 flask-bcrypt = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
-pyjwt = "*"
 pytest = "*"
-jwt = "*"
+pyjwt = "==1.7.1"
 
 [dev-packages]
 
