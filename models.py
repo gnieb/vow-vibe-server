@@ -10,7 +10,7 @@ import re
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
-    serialize_rules = ('-weddings','-todos')
+    serialize_rules = ('-wedding','-todos', '-guests')
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, nullable=False)
@@ -18,9 +18,9 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     # wedding_id = db.relationship('Wedding', backref='user')
-    weddings = db.relationship('Wedding', backref='user' )
+    wedding = db.relationship('Wedding', uselist=False, backref='user' )
     todos = db.relationship('ToDo', backref='user' )
-
+    guests = db.relationship('Guest', backref="user")
     @hybrid_property
     def password_hash(self):
         raise Exception('Password hashes may not be viewed')
@@ -49,15 +49,15 @@ class User(db.Model, SerializerMixin):
 class Wedding(db.Model, SerializerMixin):
     __tablename__ = 'weddings'
 
-    serialize_rules = ('-guests',)
+    
 
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
-    wedding_date = db.Column(db.DateTime, default=datetime.now)
+    wedding_date = db.Column(db.DateTime)
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    guests = db.relationship('Guest', backref="wedding")
+
 
 
 class Guest(db.Model, SerializerMixin):
@@ -66,7 +66,7 @@ class Guest(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    wedding_id = db.Column(db.Integer, db.ForeignKey('weddings.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     isAttending = db.Column(db.Boolean )
 
 class ToDo(db.Model, SerializerMixin):

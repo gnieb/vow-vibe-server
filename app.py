@@ -59,7 +59,7 @@ class UserById(Resource):
 
         if not user:
             return make_response({"error":"no user found"}, 404)
-        return make_response(user.to_dict(rules=('weddings','todos')), 200)
+        return make_response(user.to_dict(rules=('wedding','todos', 'guests')), 200)
 
 
 ####### SignIn########
@@ -76,7 +76,7 @@ class Login(Resource):
         
         if user.authenticate(password):
             token = jwt.encode({'id': user.id},  os.getenv('SECRET_KEY'))
-            return make_response({'token': token.decode('UTF-8'), 'user':user.to_dict(rules=('weddings',))}, 200)
+            return make_response({'token': token.decode('UTF-8'), 'user':user.to_dict(rules=('wedding',))}, 200)
 
         return make_response({"error":"Authentication failed"}, 400)
     # expire this after 2 hours
@@ -89,7 +89,7 @@ class SignOut(Resource):
 
 class Weddings(Resource):
     def get(self):
-        weddings = [w.to_dict() for w in Wedding.query.find_all() ]
+        weddings = [w.to_dict() for w in Wedding.query.all() ]
 
         if len(weddings) == 0:
             return make_response({"error":"No weddings found"}, 400)
@@ -127,6 +127,38 @@ class Weddings(Resource):
         
         except:
             return make_response({"error":"Validation Error"}, 400)
+class Guests(Resource):
+    def get(self):
+
+        guests = [g.to_dict() for g in Guest.query.all()]
+
+        if len(guests) == 0:
+            return make_response({"error":"guests not found"}, 404)
+            
+        return make_response(guests, 200)
+    
+    def post(self):
+
+        data = request.get_json()
+
+        try:
+            newGuest = Guest(
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                user_id=data['user_id'],
+            )
+        except:
+            print("error in creating new guest record...")
+            return make_response({"error":"error in creating new Guest record"}, 400)
+        try:
+            db.session.add(newGuest)
+            db.session.commit()
+
+            return make_response({newGuest.to_dict()}, 201)
+        except:
+            print("error adding new guest to the database")
+            return make_response({"error committing record to the database"}, 400)
+
         
         
 api.add_resource(Home, '/')
@@ -135,6 +167,7 @@ api.add_resource(Users, '/users')
 api.add_resource(SignOut, '/signout')
 api.add_resource(Weddings, '/weddings')
 api.add_resource(UserById, '/users/<int:id>')
+api.add_resource(Guests, '/guests')
 
 
 if __name__ == '__main__':
