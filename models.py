@@ -17,7 +17,6 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    # wedding_id = db.relationship('Wedding', backref='user')
     wedding = db.relationship('Wedding', uselist=False, backref='user' )
     todos = db.relationship('ToDo', backref='user' )
     guests = db.relationship('Guest', backref="user")
