@@ -161,23 +161,34 @@ class Guests(Resource):
 
 class GuestById(Resource):
     def patch(self, id):
-        guest = Guest.query.filter_by(id == id).first()
-
+        guest = Guest.query.filter_by(id = id).first()
+        print(guest.first_name)
         if not guest:
             return make_response({"error":"guest not found"}, 404)
         
         try:
             data = request.get_json()
-            for key in data.keys():
-                setattr(guest, key, data[key])
-        except:
-            return make_response({"error":"Validation error, unprocessable entity"}, 422)
-        
+            print(data)
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    # Handle nested objects
+                    for nested_key, nested_value in value.items():
+                        setattr(getattr(guest, key), nested_key, nested_value)
+                else:
+                    setattr(guest, key, value)
+
+        except Exception as e:
+            return make_response({"error": f"Error:{e}"}, 400)
+        # except KeyError as e:
+        #     return make_response({"error": f"KeyError: {e}"}, 400)
+        # except ValueError as e:
+        #     return make_response({"error": f"ValueError: {e}"}, 400)
         try:
-            db.session.add(guest)
             db.session.commit()
-        except:
-            return make_response({"error":"Validation error, unprocessable entity, check db constraint"}, 422)
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return make_response({"error": "Validation error, unprocessable entity, check db constraint"}, 422)
     
         return make_response(guest.to_dict(), 200)
         
