@@ -159,7 +159,27 @@ class Guests(Resource):
             print("error adding new guest to the database")
             return make_response({"error committing record to the database"}, 400)
 
+class GuestById(Resource):
+    def patch(self, id):
+        guest = Guest.query.filter_by(id == id).first()
+
+        if not guest:
+            return make_response({"error":"guest not found"}, 404)
         
+        try:
+            data = request.get_json()
+            for key in data.keys():
+                setattr(guest, key, data[key])
+        except:
+            return make_response({"error":"Validation error, unprocessable entity"}, 422)
+        
+        try:
+            db.session.add(guest)
+            db.session.commit()
+        except:
+            return make_response({"error":"Validation error, unprocessable entity, check db constraint"}, 422)
+    
+        return make_response(guest.to_dict(), 200)
         
 api.add_resource(Home, '/')
 api.add_resource(Login, '/login')
@@ -168,6 +188,7 @@ api.add_resource(SignOut, '/signout')
 api.add_resource(Weddings, '/weddings')
 api.add_resource(UserById, '/users/<int:id>')
 api.add_resource(Guests, '/guests')
+api.add_resource(GuestById, '/guests/<int:id>')
 
 
 if __name__ == '__main__':
