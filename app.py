@@ -1,7 +1,7 @@
 from config import app, api, db
 from flask_restful import Resource
 from flask import make_response, request
-from models import Wedding, User, Guest
+from models import Wedding, User, Guest, ToDo
 from datetime import datetime, timedelta
 import json
 import os
@@ -191,6 +191,29 @@ class GuestById(Resource):
             return make_response({"error": "Validation error, unprocessable entity, check db constraint"}, 422)
     
         return make_response(guest.to_dict(), 200)
+
+class Todos(Resource):
+    def post(self):
+        data = request.get_json()
+
+        try:
+            newTodo = ToDo(
+                todo=data['todo'],
+                isDone=False,
+                user_id=data['user_id']
+            )
+        
+        except Exception as e:
+            return make_response({"error": f"Error:{e}"}, 400)
+        
+        try:
+            db.session.add(newTodo)
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return make_response({"error": "Validation error, unprocessable entity, check db constraint"}, 422)
+
         
 api.add_resource(Home, '/')
 api.add_resource(Login, '/login')
@@ -200,6 +223,7 @@ api.add_resource(Weddings, '/weddings')
 api.add_resource(UserById, '/users/<int:id>')
 api.add_resource(Guests, '/guests')
 api.add_resource(GuestById, '/guests/<int:id>')
+api.add_resource(Todos, '/todos')
 
 
 if __name__ == '__main__':
